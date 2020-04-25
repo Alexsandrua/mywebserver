@@ -1,0 +1,11 @@
+{
+  "name": "webserwer",
+  "version": "0.1.0",
+  "description": "HTTP, TCP server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alexsandr Turkovskiy",
+  "license": "ISC"
+}
