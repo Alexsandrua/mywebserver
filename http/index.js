@@ -13,7 +13,13 @@ class WebServer extends EventEmitter {
     this.pathReq = {};
     this.logs = {};
     this.logUp = false;
-    //this.lofStr =
+    this.namePathReq = '';
+    this.index = 0;
+    this.next = () => {
+      console.log(this.index, ' ===', this.namePathReq)
+      this.index++
+      this.pathReq[this.namePathReq][this.index].call(this, this.req, this.res, this.next);
+    }
   }
 
   get listen() {
@@ -35,10 +41,7 @@ class WebServer extends EventEmitter {
     this.logUp = bool;
   }
   get log() {
-    return this.logs
-  }
-  set strLog (lgs) {
-      
+    return this.logs;
   }
 
   initServer(port) {
@@ -46,23 +49,33 @@ class WebServer extends EventEmitter {
     http
       .createServer((req, res) => {
         //test
+        this.namePathReq = req.method.toLowerCase() + req.url.slice(1);
 
-        let pathReq = req.method.toLowerCase() + req.url.slice(1);
-
-        if (typeof this.pathReq[pathReq] == "function") {
-          this.pathReq[pathReq](req, res);
+        if (typeof this.pathReq[this.namePathReq][0] == "function") {
+          this.req = req;
+          this.res = res;
+          if (this.pathReq[this.namePathReq][0].length > 2) {
+            this.pathReq[this.namePathReq][0].call(this, this.req, this.res, this.next);
+          } else {
+            this.pathReq[this.namePathReq][0](req, res);
+          }
           if (this.logUp) {
             this.logs[Date.now()] =
-               "method :" + req.method + ", url: " + req.url + ", statusCode: " + res.statusCode + ", Date: " + new Date();
+              "method :" +
+              req.method +
+              ", url: " +
+              req.url +
+              ", statusCode: " +
+              res.statusCode +
+              ", Date: " +
+              new Date();
           }
         }
       })
       .listen(this.listen);
   }
 
-  next() {}
-
-  get(path, cb) {
+  get(path, ...cb) {
     // Метод GET запитує представлення вказаного ресурсу. Запити, які використовують GET, повинні лише отримувати дані.
     this.pathReq["get" + path || "/"] = cb;
   }
@@ -102,31 +115,4 @@ class WebServer extends EventEmitter {
   }
 }
 
-let app = new WebServer();
-app.initServer();
-
-app.options("", (req, res) => {
-  var headers = {};
-
-  // set header to handle the CORS
-  headers["Access-Control-Allow-Origin"] = "*";
-  headers["Access-Control-Allow-Headers"] =
-    "Content-Type, Content-Length, Authorization, Accept, X-Requested-With";
-  headers["Access-Contrl-Allow-Methods"] = "PUT, POST, GET, DELETE, OPTIONS";
-  headers["Access-Control-Max-Age"] = "86400";
-  res.writeHead(200, headers);
-  res.end();
-});
-
-app.get("test", (req, res) => {
-  console.log("testGet", req.method, req.url);
-  res.write("hi \n");
-  res.end();
-});
-let testn = 0
-app.log = true;
-setInterval(() => {
-    console.log(app.log)
-    console.log('-----------' + testn++)
-}, 10000)
-
+module.exports = WebServer
