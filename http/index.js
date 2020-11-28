@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 const http = require("http");
 const https = require("https");
@@ -45,10 +45,15 @@ class WebServer extends EventEmitter {
         this.req = req;
         this.res = res;
         this.namePathReq = req.method.toLowerCase() + req.url.slice(1);
-        if (typeof this.pathReq[this.namePathReq][0] == "function") {
+        if ( Array.isArray(this.pathReq[this.namePathReq]) && typeof this.pathReq[this.namePathReq][0] == "function") {
           this.pathReq[this.namePathReq][0](this.req, this.res, this.next);
           if (this.logUp) {
-            this.logs[Date.now()] = `method: ${req.method}, url: ${req.url}, statusCode: ${res.statusCode}, Date: ${new Date()}` 
+            this.logs[Date.now()] = `method: ${req.method}, url: ${req.url}, statusCode: ${res.statusCode}, Date: ${new Date()}`
+          }
+        } else if (typeof this.pathReq[this.namePathReq] == "function") {
+          this.pathReq[this.namePathReq](this.req, this.res, this.next);
+          if (this.logUp) {
+            this.logs[Date.now()] = `method: ${req.method}, url: ${req.url}, statusCode: ${res.statusCode}, Date: ${new Date()}`
           }
         }
       })
