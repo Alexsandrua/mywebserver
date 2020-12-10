@@ -40,11 +40,30 @@ module.exports = class WebServer extends EventEmitter {
     return this.logs
   }
 
-   body(req, cb) {
+  getBody(req) {
     let body = []
-    req.on('error', err => console.error(err))
-    .on('data', chunck => body.push(chunck))
-    .on('end', () => cb(Buffer.concat(body).toString()))
+    return (cb) => {
+      req.on('error', err => console.error(err))
+      .on('data', chunck => body.push(chunck))
+      .on('end', () => {
+        let data = Buffer.concat(body).toString()
+        this.req.body = data
+        cb(data)
+      })
+    }
+  }
+
+  query(req) {
+    if (req.url.indexOf('?') != -1) {
+      let urlQuery = req.url.slice(req.url.indexOf('?'))
+      const query = {}
+      urlQuery.split('&').map(line => {
+        if(!line.length) return void 1
+        let parValue = line.split('=')
+        query[parValue[0]] = parValue[1]
+      })
+      return query
+    } else return void 1
   }
 
   initServer(port) {
@@ -52,12 +71,15 @@ module.exports = class WebServer extends EventEmitter {
     http.createServer((req, res) => {
         this.req = req
         this.res = res
-        this.body(req, body => {
-          this.req.body = body
+
+        this.req.query = this.query(req)
+        this.req.getBody = this.getBody(req)
+
           let urlWithoutQuery = req.url.slice(1)
-          if(req.url.indexOf('?') != -1) urlWithoutQuery = req.url.slice(1, req.url.indexOf('?'))
+          if (req.url.indexOf('?') != -1) urlWithoutQuery = req.url.slice(1, req.url.indexOf('?'))
+
           this.namePathReq = req.method.toLowerCase() + urlWithoutQuery;
-          if ( Array.isArray(this.pathReq[this.namePathReq]) && typeof this.pathReq[this.namePathReq][0] == "function") {
+          if (Array.isArray(this.pathReq[this.namePathReq]) && typeof this.pathReq[this.namePathReq][0] == "function") {
             this.pathReq[this.namePathReq][0](this.req, this.res, this.next)
             if (this.logUp) {
               this.logs[Date.now()] = `method: ${req.method}, url: ${req.url}, statusCode: ${res.statusCode}, Date: ${new Date()}`
@@ -68,7 +90,6 @@ module.exports = class WebServer extends EventEmitter {
               this.logs[Date.now()] = `method: ${req.method}, url: ${req.url}, statusCode: ${res.statusCode}, Date: ${new Date()}`
             }
           }
-        })
       })
       .listen(this.listen)
   }
@@ -77,29 +98,29 @@ module.exports = class WebServer extends EventEmitter {
     this.pathReq["get" + path || "/"] = cb
   }
 
-  head(path, cb) {
+  head(path, ...cb) {
     this.pathReq["head" + path || "/"] = cb
   }
 
-  post(path, cb) {
+  post(path, ...cb) {
     this.pathReq["post" + path || "/"] = cb
   }
-  put(path, cb) {
+  put(path, ...cb) {
     this.pathReq["put" + path || "/"] = cb
   }
-  delete(path, cb) {
+  delete(path, ...cb) {
     this.pathReq["delete" + path || "/"] = cb
   }
-  connect(path, cb) {
+  connect(path, ...cb) {
     this.pathReq["connect" + path || "/"] = cb
   }
-  options(path, cb) {
+  options(path, ...cb) {
     this.pathReq["options" + path || "/"] = cb;
   }
-  trace(path, cb) {
+  trace(path, ...cb) {
     this.pathReq["trace" + path || "/"] = cb
   }
-  patch(path, cb) {
+  patch(path, ...cb) {
     this.pathReq["patch" + path || "/"] = cb
   }
 }
