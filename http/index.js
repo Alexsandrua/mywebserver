@@ -1,17 +1,17 @@
 "use strict";
 
-const http = require("http")
-const https = require("https")
-const EventEmitter = require("events")
-const url = require("url")
+const http = require("http");
+const https = require("https");
+const EventEmitter = require("events");
+const url = require("url");
 
 module.exports = class WebServer extends EventEmitter {
   constructor() {
     super();
-    this.pathReq = {}
-    this.logs = {}
+    this.pathReq = {};
+    this.logs = {};
     this.logUp = false;
-    this.index = 0
+    this.index = 0;
     this.next = () => {
       this.index++
       this.pathReq[this.namePathReq][this.index](this.req, this.res, this.next)
@@ -19,7 +19,8 @@ module.exports = class WebServer extends EventEmitter {
   }
 
   get listen() {
-    return this.listenPort || 3012
+    console.log('Port : ', this.listenPort || 3012);
+    return this.listenPort || 3012;
   }
 
   set listen(listenPort) {
