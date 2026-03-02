@@ -1,3 +1,4 @@
+
 "use strict"
 
 const redis = require("redis");
@@ -23,7 +24,7 @@ app.options("", (req, res) => {
 async function setRedis() {
 
   const  client = await redis.createClient({
-    url: 'redis://172.18.0.2:6379',
+    url: 'redis://:EOM*191721*UNR@172.18.0.2:6379',
   }).on('error', (err) => console.error('Redis Client Error', err)).connect();
   await client.set("key0001", "00010111");
   const value = await client.get("key0001");
@@ -33,11 +34,12 @@ async function setRedis() {
 
 }
 
-
+  const setData = async () {
+    await
+}
 
 app.get('test', async (req, res) => {
  setRedis().then((v) => {
 console.log('data v : ',v);
-});
-  
+   });
 });
