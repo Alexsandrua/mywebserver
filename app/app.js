@@ -1,11 +1,13 @@
 
 "use strict"
 
-const redis = require("redis");
-const jwt = require('jsonwebtoken');
-const app = require("../").http;
-require('dotenv').config();
-
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+import { createClient } from "redis";
+import jwt from 'jsonwebtoken';
+import app from "../http/index.js";
+import { getDataH } from "./service/action.js";
+import "dotenv/config";
 
 
 app.initServer();
@@ -24,7 +26,7 @@ const headers = {
 
 async function clientRedis() {
 
-  return await redis.createClient({
+  return await createClient({
     url: process.env.REDIS_URL
   })
     .on('error', (err) => console.error('Redis Client Error', err))
@@ -65,11 +67,12 @@ app.get('test', async (req, res) => {
 
 });
 
-app.post('setcard', async (req, res) => {
-  req.getBody((data) => {
+app.post('datastor', async (req, res) => {
+
+  await req.getBody(async (data) => {
     let d = JSON.parse(data);
-    setData(d);
-    punchCard[d.sesionId] = d.punchCard;
+    console.log('POST POST POST', d)
+    await getDataH(d.token, JSON.stringify(d.data));
   });
   res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
   res.end('ok');

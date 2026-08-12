@@ -1,5 +1,8 @@
 'use ustric'
 
-module.exports = {
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+export default  {
     http: require('./http')
 }

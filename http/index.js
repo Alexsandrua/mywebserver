@@ -1,5 +1,8 @@
 "use strict";
 
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
 const http = require("http");
 const https = require("https");
 const EventEmitter = require("events");
@@ -176,4 +179,4 @@ class WebServer extends EventEmitter {
 }
 
 
-module.exports = new WebServer();
+export default  new WebServer();
