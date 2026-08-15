@@ -54,7 +54,7 @@ class WebServer extends EventEmitter {
 
   query(req) {
     if (req.url.indexOf('?') != -1) {
-      let urlQuery = req.url.slice(req.url.indexOf('?'))
+      let urlQuery = req.url.slice(req.url.indexOf('?') + 1)
       const query = {}
       urlQuery.split('&').map(line => {
         if(!line.length) return void 1

@@ -25,11 +25,12 @@ export class wRedis {
     }
 
     async getToken(token) {
-        return await this.initR.hGet(token.redisSchem[0], token);
+        return await this.initR.hGet(this.redisSchem[0], token);
     }
 
-    async getName(token) {
-        return await this.initR.hGet(token.redisSchem[0], token);
+    async getName(name) {
+        console.log('a',this.redisSchem[1],'a')
+        return await this.initR.hGet(this.redisSchem[1], name);
     }
 }
 
