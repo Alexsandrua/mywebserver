@@ -27,29 +27,53 @@ const headers = {
 
 app.get('searchname', async (req, res) => {
   const name = req.query['search'];
-  const seachRes = await matchName(name.trim());
+  const seachRes = [];
+  const seachRes0 = await matchName(decodeURIComponent(name));
+  if (seachRes0) seachRes.push(seachRes0);
+  const seachRes1 = await matchName(`_${decodeURIComponent(name)}`);
+  if (seachRes1) seachRes.push(seachRes1);
+
+
   res.setHeader('Content-Type', 'application/json');
   try {
 
-    if (true) {
+    if (seachRes.length) {
       res.writeHead(200, headers)
         .end(JSON.stringify({ message: 'Дані присутні', name: seachRes }));
     } else {
       res.writeHead(204, headers)
-        .end(JSON.stringify({ message: 'Дані відсутні', sesionId: req.query['?id'], statusStoreCards: false }));
+        .end(JSON.stringify({ message: 'Дані відсутні', name: false }));
     }
   } catch (e) {
     console.error(e);
   }
+});
 
+app.get('actionwrite', async (req, res) => {
+  const name = req.query['search'];
+  
+  const seachRes = await matchName(decodeURIComponent(name));
 
+  res.setHeader('Content-Type', 'application/json');
+  try {
+
+    if (seachRes.length) {
+      res.writeHead(200, headers)
+        .end(JSON.stringify({ message: 'Дані присутні', name: seachRes }));
+    } else {
+      res.writeHead(204, headers)
+        .end(JSON.stringify({ message: 'Дані відсутні', name: false }));
+    }
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 app.post('datastor', async (req, res) => {
 
   await req.getBody(async (data) => {
     let d = JSON.parse(data);
-    console.log('POST POST POST', d)
+
     await saveKomira(d.token, JSON.stringify(d.data));
   });
   res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });

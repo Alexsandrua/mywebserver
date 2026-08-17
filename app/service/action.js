@@ -14,6 +14,6 @@ export async function saveKomira(token, data) {
 }
 
 // пошук співпадінь по назві
-export async function matchName(name) {
+export async function matchName(name) { 
     return await redisService.getName(name);
 }
