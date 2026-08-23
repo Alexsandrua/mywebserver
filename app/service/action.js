@@ -19,3 +19,11 @@ export async function saveTempKomira(data) {
 export async function matchName(name) { 
     return await redisService.getName(name);
 }
+
+export async function saveLeterKomira(data) {
+    const datajson = JSON.parse(data);
+    console.log(datajson.token);
+    const metaData = await redisService.getTempKomirka(datajson.token);
+    console.log(' META DATA ', metaData)
+    //await redisService.saveKomirka(metaData);
+}

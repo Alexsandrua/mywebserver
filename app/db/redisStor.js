@@ -24,12 +24,16 @@ export class wRedis {
         await this.initR.hSet(this.redisSchem[0], token, value);
     }
 
-    async getToken(token) {
+    async getTempKomirka(token) {
         return await this.initR.hGet(this.redisSchem[0], token);
     }
 
     async getName(name) {
         return await this.initR.hGet(this.redisSchem[1], name);
+    }
+
+    async saveKomirka(name) {
+        await this.initR.hSet(this.redisSchem[0], name, `${new Date().getTime()}`);
     }
 }
 

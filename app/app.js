@@ -6,7 +6,7 @@ const require = createRequire(import.meta.url);
 import { createClient } from "redis";
 import jwt from 'jsonwebtoken';
 import app from "../http/index.js";
-import { saveTempKomira, matchName } from "./service/action.js";
+import { saveTempKomira, matchName , saveLeterKomira} from "./service/action.js";
 import "dotenv/config";
 
 
@@ -73,6 +73,15 @@ app.post('datastor', async (req, res) => {
 
   await req.getBody(async (data) => {
     await saveTempKomira(data);
+  });
+  res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
+  res.end('ok');
+});
+
+app.post('dataseve', async (req, res) => {
+
+  await req.getBody(async (data) => {
+    await saveLeterKomira(data);
   });
   res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
   res.end('ok');
