@@ -20,7 +20,7 @@ export class wRedis {
 
     }
 
-    async saveK(token, value) {
+    async saveTempKomirka(token, value) {
         await this.initR.hSet(this.redisSchem[0], token, value);
     }
 
@@ -29,7 +29,6 @@ export class wRedis {
     }
 
     async getName(name) {
-        console.log('a',this.redisSchem[1],'a')
         return await this.initR.hGet(this.redisSchem[1], name);
     }
 }

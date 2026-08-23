@@ -9,8 +9,10 @@ redisService.initRedis();
 await redisService.initR.connect();
 
 // збереження нової комірки 
-export async function saveKomira(token, data) {
-    await redisService.saveK(token, data);
+export async function saveTempKomira(data) {
+    const datajson = JSON.parse(data);
+    console.log(datajson.token);
+    await redisService.saveTempKomirka(datajson.token, JSON.stringify(datajson.data));
 }
 
 // пошук співпадінь по назві

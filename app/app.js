@@ -6,7 +6,7 @@ const require = createRequire(import.meta.url);
 import { createClient } from "redis";
 import jwt from 'jsonwebtoken';
 import app from "../http/index.js";
-import { saveKomira, matchName } from "./service/action.js";
+import { saveTempKomira, matchName } from "./service/action.js";
 import "dotenv/config";
 
 
@@ -57,7 +57,7 @@ app.get('actionwrite', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   try {
 
-    if (seachRes.length) {
+    if (seachRes) {
       res.writeHead(200, headers)
         .end(JSON.stringify({ message: 'Дані присутні', name: seachRes }));
     } else {
@@ -72,9 +72,7 @@ app.get('actionwrite', async (req, res) => {
 app.post('datastor', async (req, res) => {
 
   await req.getBody(async (data) => {
-    let d = JSON.parse(data);
-
-    await saveKomira(d.token, JSON.stringify(d.data));
+    await saveTempKomira(data);
   });
   res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
   res.end('ok');
