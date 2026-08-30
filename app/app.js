@@ -1,9 +1,6 @@
 
 "use strict"
 
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-import { createClient } from "redis";
 import jwt from 'jsonwebtoken';
 import app from "../http/index.js";
 import { saveTempKomira, matchName , saveLeterKomira} from "./service/action.js";

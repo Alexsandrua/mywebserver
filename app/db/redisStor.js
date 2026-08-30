@@ -1,8 +1,5 @@
 "use strict"
 
-//const { createClient } = require("redis");
-//require('dotenv').config();
-
 import { createClient } from "redis";
 import "dotenv/config";
 
@@ -33,7 +30,11 @@ export class wRedis {
     }
 
     async saveKomirka(name) {
-        await this.initR.hSet(this.redisSchem[0], name, `${new Date().getTime()}`);
+        const timeDate = new Date().getTime();
+        await this.initR.hSet(this.redisSchem[1], name, timeDate, {
+            EX: 10,
+            NX: true,
+        });
     }
 }
 
