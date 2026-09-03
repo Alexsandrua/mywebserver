@@ -11,6 +11,9 @@ await redisService.initR.connect();
 
 const mWrite = new mongoWrite();
 await mWrite.connectMDB();
+mWrite.lCollection3month();
+mWrite.lCollection3day();
+mWrite.lCollection1day();
 
 // збереження нової комірки 
 export async function saveTempKomira(data) {
@@ -31,47 +34,41 @@ export async function saveLeterKomira(data) {
     const mData = JSON.parse(metaData);
     const leter = {};
 
-    //{"oneName":"jku","secondName":"","password":""}
-
     if (mData.oneName && mData.secondName && mData.password) {
-        console.log(' FIRST 00001')
-        mWrite.lCollection3month();
-        await redisService.saveKomirka(`_${mData.secondName}`);
-
         leter[`_${mData.secondName}${mData.password}`] = datajson.data;
         leter[`${mData.oneName}_${mData.secondName}`] = 'edit';
+        const result = await mWrite.insertLeter3month(leter);
+        await redisService.saveKomirka(`_${mData.secondName}`, `${result.insertedId}`);
+        const allUsers3m = await mWrite.lettersCollection3m.find({}).toArray();
+        console.log("Всі користувачі в базі:", allUsers3m);
 
-        await mWrite.insertLeter3month(leter);
-const allUsers3m = await mWrite.lettersCollection3m.find({}).toArray();
-    console.log("Всі користувачі в базі:", allUsers3m);
-        
 
     } else if (mData.oneName && mData.secondName) {
-        console.log(' CECOND 00010')
-        await redisService.saveKomirka(`_${mData.secondName}`);
 
         leter[`_${mData.secondName}`] = datajson.data;
         leter[`${mData.oneName}_${mData.secondName}`] = 'edit';
-        mWrite.lCollection3day();
-        await mWrite.insertLeter3day(leter);
+        const result = await mWrite.insertLeter3day(leter);
+        await redisService.saveKomirka(`_${mData.secondName}`, `${result.insertedId}`);
         const allUsers3d = await mWrite.lettersCollection3d.find({}).toArray();
-    console.log("Всі користувачі в базі:", allUsers3d);
+        console.log("Всі користувачі в базі:", allUsers3d);
 
     } else if (mData.oneName) {
-        console.log(' THRID 00100')
-        mWrite.lCollection1day();
-        await redisService.saveKomirka(mData.oneName);
-
         leter[mData.oneName] = datajson.data;
-
-        await mWrite.insertLeter1day(leter);
+        const result = await mWrite.insertLeter1day(leter);
+        await redisService.saveKomirka(mData.oneName, `${result.insertedId}`);
         const allUsers1 = await mWrite.lettersCollection1d.find({}).toArray();
-    console.log("Всі користувачі в базі:", allUsers1);
+        console.log("Всі користувачі в базі:", allUsers1);
     }
+}
 
-    
-    
-    const allUsers3m = await mWrite.lettersCollection3m.find({}).toArray();
-    console.log("Всі користувачі в базі:", allUsers3m);
+export async function getLeter(name, type) {
+    const _id = await redisService.getName(name);
 
+    if (type == 1) {
+        return await mWrite.getLeter3day(_id);
+    } else if (type == 2) {
+        return await mWrite.getLeter1day(_id);
+    } else if (type == 3) {
+        return await mWrite.getLeter3month(_id);
+    }
 }

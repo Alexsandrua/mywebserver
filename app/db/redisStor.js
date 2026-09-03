@@ -29,9 +29,9 @@ export class wRedis {
         return await this.initR.hGet(this.redisSchem[1], name);
     }
 
-    async saveKomirka(name) {
-        const timeDate = new Date().getTime();
-        await this.initR.hSet(this.redisSchem[1], name, timeDate, {
+    async saveKomirka(name, _id) {
+        //const timeDate = new Date().getTime();
+        await this.initR.hSet(this.redisSchem[1], name, _id, {
             EX: 10,
             NX: true,
         });

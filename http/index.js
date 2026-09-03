@@ -34,117 +34,121 @@ class WebServer extends EventEmitter {
   get log() {
     return this.logs
   }
-  
+
   next = () => {
-      this.index++
-      this.pathReq[this.namePathReq][this.index](this.req, this.res, this.next)
-    };
+    this.index++
+    this.pathReq[this.namePathReq][this.index](this.req, this.res, this.next)
+  };
 
   getBody(req, cb) {
     let body = []
     return (cb) => {
       req.on('error', err => console.error(err))
-      .on('data', chunck => body.push(chunck))
-      .on('end', () => {
-        let data = Buffer.concat(body).toString()
-        cb(data)
-      })
-   }
+        .on('data', chunck => body.push(chunck))
+        .on('end', () => {
+          let data = Buffer.concat(body).toString()
+          cb(data)
+        })
+    }
   }
 
   query(req) {
-    if (req.url.indexOf('?') != -1) {
+    const baseURL = `http://${req.headers.host}`;
+    const parsedUrl = new URL(req.url, baseURL);
+    return parsedUrl.searchParams
+    /*if (req.url.indexOf('?') != -1) {
       let urlQuery = req.url.slice(req.url.indexOf('?') + 1)
       const query = {}
       urlQuery.split('&').map(line => {
-        if(!line.length) return void 1
+        if (!line.length) return void 1
         let parValue = line.split('=')
         query[parValue[0]] = parValue[1]
       })
-      return query
-    } else return void 1
+      return parsedUrl.searchParams
+    } else return void */
   }
 
   initServer() {
-   return  http.createServer((req, res) => {
-    
-    
-    const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'PUT, POST, GET, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept, X-Requested-With',
-    'Access-Control-Max-Age': 86400, // 24 години
-  };
-  
+    return http.createServer((req, res) => {
 
-   if (req.method === 'OPTIONS') {
-     res.writeHead(204,  headers);
-     res.end();
-     return;
-    }
 
-    console.log( ' METHOD ', req.method)
-         //res.writeHead(200, { 'Content-Type': 'text/plain' });
 
-        req.query = this.query(req);
-        req.getBody = this.getBody(req);
+      const headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'PUT, POST, GET, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept, X-Requested-With',
+        'Access-Control-Max-Age': 86400, // 24 години
+      };
 
-          let urlWithoutQuery = req.url.slice(1);
-           
-          if (req.url.indexOf('?') != -1) urlWithoutQuery = req.url.slice(1, req.url.indexOf('?'));
-          let method = req.method.toLowerCase();
-          this.namePathReq = req.method.toLowerCase() + urlWithoutQuery;
-          console.log(this.namePathReq)
- 
- 
-          if (Array.isArray(this.pathReq[this.namePathReq]) && typeof this.pathReq[this.namePathReq][0] == "function") {
-            this.pathReq[this.namePathReq][0](req, res, this.next);
-            //this.sortMethod(method, this.namePathReq, this.pathReq[this.namePathReq][0](this.req, this.res, this.next));
-            if (this.logUp) {
-              this.logs[Date.now()] = `method: ${req.method}, url: ${req.url}, statusCode: ${res.statusCode}, Date: ${new Date()}`;
-            }
-          } else if (typeof this.pathReq[this.namePathReq] == "function") {
-            this.pathReq[this.namePathReq](req, res, this.next);
-            //this.sortMethod(method, this.namePathReq, this.pathReq[this.namePathReq][0](this.req, this.res, this.next));
-            if (this.logUp) {
-              this.logs[Date.now()] = `method: ${req.method}, url: ${req.url}, statusCode: ${res.statusCode}, Date: ${new Date()}`;
-            }
-          } 
-          
-      })
+
+      if (req.method === 'OPTIONS') {
+        res.writeHead(204, headers);
+        res.end();
+        return;
+      }
+
+      console.log(' METHOD ', req.method)
+      //res.writeHead(200, { 'Content-Type': 'text/plain' });
+
+      req.query = this.query(req);
+      req.getBody = this.getBody(req);
+
+      let urlWithoutQuery = req.url.slice(1);
+
+      if (req.url.indexOf('?') != -1) urlWithoutQuery = req.url.slice(1, req.url.indexOf('?'));
+      let method = req.method.toLowerCase();
+      this.namePathReq = req.method.toLowerCase() + urlWithoutQuery;
+      console.log(this.namePathReq)
+
+
+      if (Array.isArray(this.pathReq[this.namePathReq]) && typeof this.pathReq[this.namePathReq][0] == "function") {
+        this.pathReq[this.namePathReq][0](req, res, this.next);
+        //this.sortMethod(method, this.namePathReq, this.pathReq[this.namePathReq][0](this.req, this.res, this.next));
+        if (this.logUp) {
+          this.logs[Date.now()] = `method: ${req.method}, url: ${req.url}, statusCode: ${res.statusCode}, Date: ${new Date()}`;
+        }
+      } else if (typeof this.pathReq[this.namePathReq] == "function") {
+        this.pathReq[this.namePathReq](req, res, this.next);
+        //this.sortMethod(method, this.namePathReq, this.pathReq[this.namePathReq][0](this.req, this.res, this.next));
+        if (this.logUp) {
+          this.logs[Date.now()] = `method: ${req.method}, url: ${req.url}, statusCode: ${res.statusCode}, Date: ${new Date()}`;
+        }
+      }
+
+    })
       .listen(this.listen);
   }
-  
+
   sortMethod(method, path, cb) {
     switch (method) {
-            case 'get':
-              this.get(path, cb);
-              break;
-            case 'head':
-              this.head(path, cb);
-              break;
-            case 'post':
-              this.post(path, cb);
-              break;
-            case 'put':
-              this.put(path, cb);
-              break;
-            case 'delete':
-              this.delete(path, cb);
-              break;
-            case 'connect':
-              this.connect(path, cb);
-              break;
-            case 'options':
-              this.options(path, cb);
-              break;
-            case 'trace':
-              this.trace(path, cb);
-              break;
-            case 'patch':
-              this.patch(path, cb);
-              break;
-          }
+      case 'get':
+        this.get(path, cb);
+        break;
+      case 'head':
+        this.head(path, cb);
+        break;
+      case 'post':
+        this.post(path, cb);
+        break;
+      case 'put':
+        this.put(path, cb);
+        break;
+      case 'delete':
+        this.delete(path, cb);
+        break;
+      case 'connect':
+        this.connect(path, cb);
+        break;
+      case 'options':
+        this.options(path, cb);
+        break;
+      case 'trace':
+        this.trace(path, cb);
+        break;
+      case 'patch':
+        this.patch(path, cb);
+        break;
+    }
   }
 
   get(path, ...cb) {
@@ -179,4 +183,4 @@ class WebServer extends EventEmitter {
 }
 
 
-export default  new WebServer();
+export default new WebServer();

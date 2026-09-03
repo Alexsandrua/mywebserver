@@ -3,7 +3,7 @@
 
 import jwt from 'jsonwebtoken';
 import app from "../http/index.js";
-import { saveTempKomira, matchName , saveLeterKomira} from "./service/action.js";
+import { saveTempKomira, matchName , saveLeterKomira, getLeter} from "./service/action.js";
 import "dotenv/config";
 
 
@@ -47,7 +47,7 @@ app.get('searchname', async (req, res) => {
 });
 
 app.get('actionwrite', async (req, res) => {
-  const name = req.query['search'];
+  const name = req.query.get('search');
   
   const seachRes = await matchName(decodeURIComponent(name));
 
@@ -66,7 +66,7 @@ app.get('actionwrite', async (req, res) => {
   }
 });
 
-app.post('datastor', async (req, res) => {
+app.post('create', async (req, res) => {
 
   await req.getBody(async (data) => {
     await saveTempKomira(data);
@@ -75,11 +75,32 @@ app.post('datastor', async (req, res) => {
   res.end('ok');
 });
 
-app.post('dataseve', async (req, res) => {
+app.post('seveleter', async (req, res) => {
 
   await req.getBody(async (data) => {
     await saveLeterKomira(data);
   });
   res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
   res.end('ok');
+});
+
+app.get('getleter', async (req, res) => {
+  const name = req.query.get('name');//req.query['name'];
+  const type = req.query.get('type');//req.query['type'];
+
+  const result = await getLeter(decodeURIComponent(name), type);
+
+  res.setHeader('Content-Type', 'application/json');
+  try {
+
+    if (result) {
+      res.writeHead(200, headers)
+        .end(JSON.stringify({ message: 'Дані присутні',  ...result }));
+    } else {
+      res.writeHead(204, headers)
+        .end(JSON.stringify({ message: 'Дані відсутні', name: false }));
+    }
+  } catch (e) {
+    console.error(e);
+  }
 });

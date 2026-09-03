@@ -50,7 +50,7 @@ export class mongoWrite {
         return this.client
     }
 
-    lCollection1day () {
+    lCollection1day() {
         this.lettersCollection1d = this.db.collection("letters1d");
         this.lettersCollection1d.createIndex(
             { "createdAt": 1 },
@@ -58,7 +58,7 @@ export class mongoWrite {
         );
     }
 
-    lCollection3day () {
+    lCollection3day() {
         this.lettersCollection3d = this.db.collection("letters3d");
         this.lettersCollection3d.createIndex(
             { "createdAt": 1 },
@@ -66,7 +66,7 @@ export class mongoWrite {
         );
     }
 
-    lCollection3month () {
+    lCollection3month() {
         this.lettersCollection3m = this.db.collection("letters3m")
         this.lettersCollection3m.createIndex(
             { "createdAt": 1 },
@@ -79,23 +79,35 @@ export class mongoWrite {
     }
 
     async insertLeter1day(data) {
-        await this.lettersCollection1d.insertOne({
+        return await this.lettersCollection1d.insertOne({
             ...data,
             createdAt: new Date(),
         });
     }
 
     async insertLeter3day(data) {
-        await this.lettersCollection3d.insertOne({
+        return await this.lettersCollection3d.insertOne({
             ...data,
             createdAt: new Date(),
         });
     }
 
     async insertLeter3month(data) {
-        await this.lettersCollection3m.insertOne({
+        return await this.lettersCollection3m.insertOne({
             ...data,
             createdAt: new Date(),
         });
+    }
+
+    async getLeter3month(_id) {
+        return await this.lettersCollection3m.findOne({ _id: new ObjectId(_id) });
+    }
+
+    async getLeter3day(_id) {
+        return await this.lettersCollection3d.findOne({ _id: new ObjectId(_id) });
+    }
+
+    async getLeter1day(_id) {
+        return await this.lettersCollection1d.findOne({ _id: new ObjectId(_id) });
     }
 }
