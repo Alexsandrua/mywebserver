@@ -3,7 +3,7 @@
 
 import jwt from 'jsonwebtoken';
 import app from "../http/index.js";
-import { saveTempKomira, matchName , saveLeterKomira, getLeter} from "./service/action.js";
+import { saveTempKomira, matchName, saveLeterKomira, getLeter } from "./service/action.js";
 import "dotenv/config";
 
 
@@ -47,19 +47,20 @@ app.get('searchname', async (req, res) => {
 });
 
 app.get('actionwrite', async (req, res) => {
-  const name = req.query.get('search');
-  
-  const seachRes = await matchName(decodeURIComponent(name));
+  const oneName = req.query.get('oneName');
+  const secondName = req.query.get('secondName');
 
+  const resultOne = oneName ? await matchName(decodeURIComponent(oneName)) : null;
+  const resultSecond = secondName ? await matchName(decodeURIComponent(secondName)) : null;
+  
   res.setHeader('Content-Type', 'application/json');
   try {
-
-    if (seachRes) {
+    if (resultOne || resultSecond) {
       res.writeHead(200, headers)
-        .end(JSON.stringify({ message: 'Дані присутні', name: seachRes }));
+        .end(JSON.stringify({ message: 'Дані присутні', oneName: resultOne, secondName: resultSecond }));
     } else {
       res.writeHead(204, headers)
-        .end(JSON.stringify({ message: 'Дані відсутні', name: false }));
+        .end();
     }
   } catch (e) {
     console.error(e);
@@ -95,7 +96,7 @@ app.get('getleter', async (req, res) => {
 
     if (result) {
       res.writeHead(200, headers)
-        .end(JSON.stringify({ message: 'Дані присутні',  ...result }));
+        .end(JSON.stringify({ message: 'Дані присутні', ...result }));
     } else {
       res.writeHead(204, headers)
         .end(JSON.stringify({ message: 'Дані відсутні', name: false }));
