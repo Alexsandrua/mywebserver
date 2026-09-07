@@ -23,23 +23,21 @@ const headers = {
 
 
 app.get('searchname', async (req, res) => {
-  const name = req.query['search'];
+  const name =  req.query.get('search'); //req.query['search'];
   const seachRes = [];
-  const seachRes0 = await matchName(decodeURIComponent(name));
-  if (seachRes0) seachRes.push(seachRes0);
-  const seachRes1 = await matchName(`_${decodeURIComponent(name)}`);
-  if (seachRes1) seachRes.push(seachRes1);
-
+  let result = await matchName(decodeURIComponent(name));
+  if (result) seachRes.push(name);
+   result = await matchName(decodeURIComponent(`_${name}`));
+  if (result) seachRes.push(`_${name}`);
 
   res.setHeader('Content-Type', 'application/json');
   try {
-
     if (seachRes.length) {
       res.writeHead(200, headers)
-        .end(JSON.stringify({ message: 'Дані присутні', name: seachRes }));
+        .end(JSON.stringify({ message: 'Дані присутні', result: seachRes }));
     } else {
       res.writeHead(204, headers)
-        .end(JSON.stringify({ message: 'Дані відсутні', name: false }));
+        .end(JSON.stringify({ message: 'Дані відсутні', result: false }));
     }
   } catch (e) {
     console.error(e);
@@ -93,7 +91,6 @@ app.get('getleter', async (req, res) => {
 
   res.setHeader('Content-Type', 'application/json');
   try {
-
     if (result) {
       res.writeHead(200, headers)
         .end(JSON.stringify({ message: 'Дані присутні', ...result }));
