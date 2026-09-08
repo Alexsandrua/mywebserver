@@ -18,21 +18,24 @@ export class wRedis {
     }
 
     async saveTempKomirka(token, value) {
-        await this.initR.hSet(this.redisSchem[0], token, value);
+        await this.initR.set(`${this.redisSchem[0]}${token}`, value, {
+            EX: 600,
+            NX: true,
+        });
     }
 
     async getTempKomirka(token) {
-        return await this.initR.hGet(this.redisSchem[0], token);
+        return await this.initR.get(`${this.redisSchem[0]}${token}`);
     }
 
     async getName(name) {
-        return await this.initR.hGet(this.redisSchem[1], name);
+        return await this.initR.get(`${this.redisSchem[1]}${name}`);
     }
 
     async saveKomirka(name, _id) {
         //const timeDate = new Date().getTime();
-        await this.initR.hSet(this.redisSchem[1], name, _id, {
-            EX: 10,
+        await this.initR.set(`${this.redisSchem[1]}${name}`, _id, {
+            EX: 3600,
             NX: true,
         });
     }

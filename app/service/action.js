@@ -29,7 +29,6 @@ export async function matchName(name) {
 
 export async function saveLeterKomira(data) {
     const datajson = JSON.parse(data);
-    console.log('DATA PALOAD ', data);
     const metaData = await redisService.getTempKomirka(datajson.token);
     const mData = JSON.parse(metaData);
     const leter = {};
