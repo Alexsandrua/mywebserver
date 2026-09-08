@@ -23,21 +23,21 @@ const headers = {
 
 
 app.get('searchname', async (req, res) => {
-  const name =  req.query.get('search'); //req.query['search'];
+  const name = req.query.get('search'); //req.query['search'];
   const seachRes = [];
   let result = await matchName(decodeURIComponent(name));
-  if (result) seachRes.push(name);
-   result = await matchName(decodeURIComponent(`_${name}`));
-  if (result) seachRes.push(`_${name}`);
+  if (result) seachRes.push({ 'oneName': name });
+  result = await matchName(decodeURIComponent(`_${name}`));
+  if (result) seachRes.push({ 'secondName': name });
 
   res.setHeader('Content-Type', 'application/json');
   try {
     if (seachRes.length) {
       res.writeHead(200, headers)
-        .end(JSON.stringify({ message: 'Дані присутні', result: seachRes }));
+        .end(JSON.stringify({ message: 'Дані присутні', names: seachRes }));
     } else {
       res.writeHead(204, headers)
-        .end(JSON.stringify({ message: 'Дані відсутні', result: false }));
+        .end(JSON.stringify({ message: 'Дані відсутні' }));
     }
   } catch (e) {
     console.error(e);
@@ -50,7 +50,7 @@ app.get('actionwrite', async (req, res) => {
 
   const resultOne = oneName ? await matchName(decodeURIComponent(oneName)) : null;
   const resultSecond = secondName ? await matchName(decodeURIComponent(secondName)) : null;
-  
+
   res.setHeader('Content-Type', 'application/json');
   try {
     if (resultOne || resultSecond) {
