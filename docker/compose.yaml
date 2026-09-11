@@ -1,12 +1,15 @@
-version: '5.0.2'
+version: '3.8' 
 
 services:
   redis:
-    image: redis
-    command: redis-server  --requirepass EOM*191721*UNR --appendonly yes
+    image: redis:7-alpine 
+    container_name: eom_redis
+    restart: always 
+    command: redis-server --requirepass EOM*191721*UNR --appendonly yes
     volumes:
       - redis_data:/data
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379" # ◄ КРИТИЧНО ДЛЯ VPS: доступ тільки всередині сервера
+
 volumes:
   redis_data:
