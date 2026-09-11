@@ -67,12 +67,13 @@ class WebServer extends EventEmitter {
     
     
     const headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': 'http://eom191721unr.org',
     'Access-Control-Allow-Methods': 'PUT, POST, GET, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept, X-Requested-With',
     'Access-Control-Max-Age': 86400, // 24 години
   };
-  
+
+
 
    if (req.method === 'OPTIONS') {
      res.writeHead(204,  headers);
