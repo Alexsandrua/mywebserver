@@ -71,7 +71,7 @@ app.post('create', async (req, res) => {
     await saveTempKomira(data);
   });
   res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
-  res.end('ok');
+  res.end();
 });
 
 app.post('seveleter', async (req, res) => {
@@ -80,7 +80,7 @@ app.post('seveleter', async (req, res) => {
     await saveLeterKomira(data);
   });
   res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
-  res.end('ok');
+  res.end();
 });
 
 app.get('getleter', async (req, res) => {
