@@ -72,8 +72,8 @@ app.post('create', async (req, res) => {
     });
     res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
     res.end(JSON.stringify({ 200: "create" }));
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    console.error(e);
     res.writeHead(204, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
     res.end(JSON.stringify({ 204: "create" }));
   }
@@ -87,8 +87,8 @@ app.post('seveleter', async (req, res) => {
     });
     res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
     res.end(JSON.stringify({ 200: "seveleter" }));
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    console.error(e);
     res.writeHead(204, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
     res.end(JSON.stringify({ 204: "seveleter" }));
   }
@@ -97,10 +97,8 @@ app.post('seveleter', async (req, res) => {
 
 app.get('getleter', async (req, res) => {
   const name = req.query.get('name');//req.query['name'];
-  const type = req.query.get('type');//req.query['type'];
-
+  const type = req.query.get('type');//req.query['type'];;
   const result = await getLeter(decodeURIComponent(name), type);
-
   res.setHeader('Content-Type', 'application/json');
   try {
     if (result) {
