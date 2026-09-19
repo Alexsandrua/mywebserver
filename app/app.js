@@ -58,7 +58,7 @@ app.get('actionwrite', async (req, res) => {
         .end(JSON.stringify({ message: 'Дані присутні', oneName: resultOne, secondName: resultSecond }));
     } else {
       res.writeHead(204, headers)
-        .end();
+        .end(JSON.stringify({}));
     }
   } catch (e) {
     console.error(e);
@@ -71,7 +71,7 @@ app.post('create', async (req, res) => {
     await saveTempKomira(data);
   });
   res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
-  res.end();
+  res.end(JSON.stringify({}));
 });
 
 app.post('seveleter', async (req, res) => {
@@ -80,7 +80,7 @@ app.post('seveleter', async (req, res) => {
     await saveLeterKomira(data);
   });
   res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
-  res.end();
+  res.end(JSON.stringify({}));
 });
 
 app.get('getleter', async (req, res) => {
