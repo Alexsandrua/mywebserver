@@ -66,21 +66,33 @@ app.get('actionwrite', async (req, res) => {
 });
 
 app.post('create', async (req, res) => {
+  try {
+    await req.getBody(async (data) => {
+      await saveTempKomira(data);
+    });
+    res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify({ 200: "create" }));
+  } catch (error) {
+    console.error(error);
+    res.writeHead(204, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify({ 204: "create" }));
+  }
 
-  await req.getBody(async (data) => {
-    await saveTempKomira(data);
-  });
-  res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
-  res.end(JSON.stringify({}));
 });
 
 app.post('seveleter', async (req, res) => {
+  try {
+    await req.getBody(async (data) => {
+      await saveLeterKomira(data);
+    });
+    res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify({ 200: "seveleter" }));
+  } catch (error) {
+    console.error(error);
+    res.writeHead(204, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify({ 204: "seveleter" }));
+  }
 
-  await req.getBody(async (data) => {
-    await saveLeterKomira(data);
-  });
-  res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
-  res.end(JSON.stringify({ 204: "create" }));
 });
 
 app.get('getleter', async (req, res) => {
