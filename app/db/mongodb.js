@@ -32,7 +32,7 @@ export class mongoWrite {
         this.lettersCollection1d = this.db.collection("letters1d");
         this.lettersCollection1d.createIndex(
             { "createdAt": 1 },
-            { expireAfterSeconds: 3600 }
+            { expireAfterSeconds: 10800 }
         );
     }
 
@@ -40,7 +40,7 @@ export class mongoWrite {
         this.lettersCollection3d = this.db.collection("letters3d");
         this.lettersCollection3d.createIndex(
             { "createdAt": 1 },
-            { expireAfterSeconds: 3600 }
+            { expireAfterSeconds: 10800 }
         );
     }
 
@@ -48,7 +48,7 @@ export class mongoWrite {
         this.lettersCollection3m = this.db.collection("letters3m")
         this.lettersCollection3m.createIndex(
             { "createdAt": 1 },
-            { expireAfterSeconds: 3600 }
+            { expireAfterSeconds: 10800 }
         );
     }
 

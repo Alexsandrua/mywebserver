@@ -20,7 +20,7 @@ export class wRedis {
     async saveTempKomirka(token, value) {
         try {
             return await this.initR.set(`${this.redisSchem[0]}${token}`, value, {
-                EX: 3600,
+                EX: 1600,
             });
         } catch (e) {
             console.error(e);
@@ -47,7 +47,7 @@ export class wRedis {
         //const timeDate = new Date().getTime();
         try {
             return await this.initR.set(`${this.redisSchem[1]}${name}`, _id, {
-                EX: 3600,
+                EX: 10800,
                 NX: true,
             });
         } catch (e) {
