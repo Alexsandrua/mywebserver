@@ -17,6 +17,14 @@ class WebServerS extends EventEmitter {
         this.server = this.createServer();
         this.handleErrorServer()
     };
+    
+    transfer(method, urlpath, cb) {
+        // Додаємо слеш на початок, якщо користувач його забув
+        const formattedPath = urlpath.startsWith('/') ? urlpath : '/' + urlpath ;
+        this.routes[method.toLowerCase() + formattedPath] = cb;
+        this.routes[method.toLowerCase() + formattedPath + '/'] = cb;
+    };
+    
     get(urlpath, cb) {
         // Додаємо слеш на початок, якщо користувач його забув
         const formattedPath = urlpath.startsWith('/') ? urlpath : '/' + urlpath ;
@@ -44,12 +52,27 @@ class WebServerS extends EventEmitter {
             res.setHeader('X-Frame-Options', 'SAMEORIGIN');
             res.setHeader('X-XSS-Protection', '1; mode=block');
             res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+            
+            console.log(req)
+            if (req.method === 'OPTIONS') {
+       // res.writeHead(204, headers);
+        //res.end();
+        //return;
+      }
+
 
             req.query = Object.fromEntries(this.query(req));
             const url = req.url.split('?')[0]; 
+            const method = req.method.toLowerCase();
             if (this.routes[url]) {
                 // Викликаємо коллбек, який ви передали в app.get()
                 return this.routes[url](req, res);
+            }
+            
+            
+            if (this.routes[method + url]) {
+                // Викликаємо коллбек, який ви передали в transfer
+                return this.routes[method + url](req, res);
             }
             
             // 2. Обробляємо маршрути (роутинг)
@@ -90,7 +113,12 @@ class WebServerS extends EventEmitter {
 
 const app = new WebServerS();
 
-
+app.transfer('GET', 'test01', (req, res) => {
+console.log('Отримано новий запит на 011001111001/test', req.query);
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.end('Це відповідь з вашого власного методу 01 .get()!');
+});
 // Тепер ви можете динамічно додавати будь-які маршрути!
 app.get('test', (req, res) => {
     console.log('Отримано новий запит на /test', req.query);
