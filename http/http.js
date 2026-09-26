@@ -1,12 +1,10 @@
 "use strict";
 
 import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-
-
+//const require = createRequire(import.meta.url);
 import http from"http";
 import {EventEmitter} from "events";
-import jwt from "url"
+//import jwt from "url"
 
 class WebServer extends EventEmitter {
   constructor() {
@@ -19,13 +17,13 @@ class WebServer extends EventEmitter {
     this.headers = false;
   }
 
-  get listen() {
-    console.log(' Port : ', this.listenPort || 3012);
-    return this.listenPort || 3012;
+  get port() {
+    console.log(' Port : ', this.listenPort);
+    return this.listenPort;
   }
 
-  set listen(listenPort) {
-    return (this.listenPort = listenPort)
+  set port(listenPort) {
+     this.listenPort = listenPort;
   }
 
   set log(bool) {
@@ -116,7 +114,7 @@ class WebServer extends EventEmitter {
       }
 
     })
-      .listen(this.listen);
+      .listen(this.listenPort);
   }
 
   sortMethod(method, path, cb) {

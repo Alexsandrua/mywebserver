@@ -1,2 +1,3 @@
 import http from "./http.js";
-export default http;
+import https from "./https.js";
+export  {http, https};

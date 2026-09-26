@@ -6,6 +6,7 @@ import path from 'path';
 class WebServerS extends EventEmitter {
     constructor() {
         super();
+        this.listenPort = 3012;
         this.routes = {};
 
         this.sslOptions = {
@@ -17,24 +18,23 @@ class WebServerS extends EventEmitter {
         this.server = this.createServer();
         this.handleErrorServer()
     };
-    
+
     transfer(method, urlpath, cb) {
-        // Додаємо слеш на початок, якщо користувач його забув
-        const formattedPath = urlpath.startsWith('/') ? urlpath : '/' + urlpath ;
+        const formattedPath = urlpath.startsWith('/') ? urlpath : '/' + urlpath;
         this.routes[method.toLowerCase() + formattedPath] = cb;
         this.routes[method.toLowerCase() + formattedPath + '/'] = cb;
+
     };
-    
+
     get(urlpath, cb) {
-        // Додаємо слеш на початок, якщо користувач його забув
-        const formattedPath = urlpath.startsWith('/') ? urlpath : '/' + urlpath ;
+        const formattedPath = urlpath.startsWith('/') ? urlpath : '/' + urlpath;
         this.routes[formattedPath] = cb;
         this.routes[formattedPath + '/'] = cb;
     };
 
     post(urlpath, cb) {
         // Додаємо слеш на початок, якщо користувач його забув
-        const formattedPath = urlpath.startsWith('/') ? urlpath : '/' + urlpath ;
+        const formattedPath = urlpath.startsWith('/') ? urlpath : '/' + urlpath;
         this.routes[formattedPath] = cb;
         this.routes[formattedPath + '/'] = cb;
     };
@@ -44,6 +44,16 @@ class WebServerS extends EventEmitter {
         const parsedUrl = new URL(req.url, baseURL);
         return parsedUrl.searchParams
     }
+
+    get listen() {
+        console.log(' Port : ', this.listenPort);
+        return this.listenPort || 3012;
+    }
+
+    set listen(listenPort) {
+        this.listenPort = listenPort;
+    }
+
     createServer() {
         return https.createServer(this.sslOptions, (req, res) => {
             // Security headers
@@ -52,29 +62,32 @@ class WebServerS extends EventEmitter {
             res.setHeader('X-Frame-Options', 'SAMEORIGIN');
             res.setHeader('X-XSS-Protection', '1; mode=block');
             res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-            
-            console.log(req)
+
             if (req.method === 'OPTIONS') {
-       // res.writeHead(204, headers);
-        //res.end();
-        //return;
-      }
+                // res.writeHead(204, headers);
+                //res.end();
+                //return;
+            }
 
 
             req.query = Object.fromEntries(this.query(req));
-            const url = req.url.split('?')[0]; 
+            const url = req.url.split('?')[0];
             const method = req.method.toLowerCase();
             if (this.routes[url]) {
                 // Викликаємо коллбек, який ви передали в app.get()
                 return this.routes[url](req, res);
             }
-            
-            
+
+
             if (this.routes[method + url]) {
                 // Викликаємо коллбек, який ви передали в transfer
                 return this.routes[method + url](req, res);
             }
-            
+
+            for (let i in this.routes) {
+                console.log(i)
+            }
+
             // 2. Обробляємо маршрути (роутинг)
             if (url === '/') {
                 res.statusCode = 200;
@@ -103,7 +116,7 @@ class WebServerS extends EventEmitter {
     };
 
     runHttpsServer() {
-        const PORT = process.env.PORT || 3000;
+        const PORT = this.listenPort;
         this.server.listen(PORT, '0.0.0.0', () => {
             console.log(`Server running at https://localhost:${PORT}`);
             console.log('Press Ctrl+C to stop the server');
@@ -111,17 +124,17 @@ class WebServerS extends EventEmitter {
     };
 }
 
-const app = new WebServerS();
-
+export default new WebServerS();
+/*
 app.transfer('GET', 'test01', (req, res) => {
-console.log('Отримано новий запит на 011001111001/test', req.query);
+// console.log('Отримано новий запит на 011001111001/test', req.query);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.end('Це відповідь з вашого власного методу 01 .get()!');
 });
 // Тепер ви можете динамічно додавати будь-які маршрути!
 app.get('test', (req, res) => {
-    console.log('Отримано новий запит на /test', req.query);
+   // console.log('Отримано новий запит на /test', req.query);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.end('Це відповідь з вашого власного методу .get()!');
@@ -135,3 +148,4 @@ app.get('/hello', (req, res) => {
 
 app.runHttpsServer();
 
+*/

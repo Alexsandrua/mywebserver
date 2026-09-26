@@ -2,11 +2,11 @@
 "use strict"
 
 import jwt from 'jsonwebtoken';
-import app from "../http/index.js";
+import { http } from "../http/index.js";
 import { saveTempKomira, matchName, saveLeterKomira, getLeter } from "./service/action.js";
 import "dotenv/config";
-
-
+const app = http;
+http.port = 4000;
 app.initServer();
 
 let punchCard = {};
