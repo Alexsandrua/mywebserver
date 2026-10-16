@@ -54,6 +54,18 @@ class WebServerS extends EventEmitter {
         this.listenPort = listenPort;
     }
 
+    getBody(req, cb) {
+        let body = []
+        return (cb) => {
+            req.on('error', err => console.error(err))
+                .on('data', chunck => body.push(chunck))
+                .on('end', () => {
+                    let data = Buffer.concat(body).toString()
+                    cb(data)
+                })
+        }
+    }
+
     createServer() {
         return https.createServer(this.sslOptions, (req, res) => {
             // Security headers
@@ -63,14 +75,9 @@ class WebServerS extends EventEmitter {
             res.setHeader('X-XSS-Protection', '1; mode=block');
             res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-            if (req.method === 'OPTIONS') {
-                // res.writeHead(204, headers);
-                //res.end();
-                //return;
-            }
-
 
             req.query = Object.fromEntries(this.query(req));
+            req.getBody = this.getBody(req);
             const url = req.url.split('?')[0];
             const method = req.method.toLowerCase();
             if (this.routes[url]) {
@@ -84,9 +91,7 @@ class WebServerS extends EventEmitter {
                 return this.routes[method + url](req, res);
             }
 
-            for (let i in this.routes) {
-                console.log(i)
-            }
+            //for (let i in this.routes) {}
 
             // 2. Обробляємо маршрути (роутинг)
             if (url === '/') {
@@ -125,27 +130,3 @@ class WebServerS extends EventEmitter {
 }
 
 export default new WebServerS();
-/*
-app.transfer('GET', 'test01', (req, res) => {
-// console.log('Отримано новий запит на 011001111001/test', req.query);
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.end('Це відповідь з вашого власного методу 01 .get()!');
-});
-// Тепер ви можете динамічно додавати будь-які маршрути!
-app.get('test', (req, res) => {
-   // console.log('Отримано новий запит на /test', req.query);
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.end('Це відповідь з вашого власного методу .get()!');
-});
-
-app.get('/hello', (req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.end('<h1>Привіт світ!</h1>');
-});
-
-app.runHttpsServer();
-
-*/

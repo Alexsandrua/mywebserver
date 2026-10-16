@@ -8,7 +8,7 @@ const server = http.createServer((req, res) => {
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept, X-Requested-With',
     'Access-Control-Max-Age': 86400, // 24 години
   };
-console.log( '   +++++-------101-------+++++  ', req.method)
+
   // 2. ОБОВ'ЯЗКОВО: обробка Preflight запиту
   if (req.method === 'OPTIONS') {
     res.writeHead(204, headers);

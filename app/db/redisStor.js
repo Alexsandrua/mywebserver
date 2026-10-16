@@ -2,7 +2,8 @@
 
 import { createClient } from "redis";
 import "dotenv/config";
-
+// await c.get(id);
+// c.set(`${data.sesionId}`, JSON.stringify(data.punchCard));
 export class wRedis {
     constructor() {
         this.initR = null;
@@ -17,10 +18,9 @@ export class wRedis {
 
     }
 
-    async saveTempKomirka(token, value) {
-        await this.initR.set(`${this.redisSchem[0]}${token}`, value, {
-            EX: 600,
-            NX: true,
+    async seveSession(id, value) {
+            await this.initR.set(`${id}`, value, {
+            EX: 3600,
         });
     }
 
@@ -28,8 +28,8 @@ export class wRedis {
         return await this.initR.get(`${this.redisSchem[0]}${token}`);
     }
 
-    async getName(name) {
-        return await this.initR.get(`${this.redisSchem[1]}${name}`);
+    async getSession(id) {
+        return await this.initR.get(`${id}`);
     }
 
     async saveKomirka(name, _id) {

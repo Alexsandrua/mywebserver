@@ -85,7 +85,6 @@ class WebServer extends EventEmitter {
         return;
       }
 
-      console.log(' METHOD ', req.method)
       //res.writeHead(200, { 'Content-Type': 'text/plain' });
 
       req.query = this.query(req);
@@ -96,7 +95,6 @@ class WebServer extends EventEmitter {
       if (req.url.indexOf('?') != -1) urlWithoutQuery = req.url.slice(1, req.url.indexOf('?'));
       let method = req.method.toLowerCase();
       this.namePathReq = req.method.toLowerCase() + urlWithoutQuery;
-      console.log(this.namePathReq)
 
 
       if (Array.isArray(this.pathReq[this.namePathReq]) && typeof this.pathReq[this.namePathReq][0] == "function") {
