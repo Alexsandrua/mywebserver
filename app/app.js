@@ -18,6 +18,7 @@ const headers = {
   'Access-Control-Max-Age': 86400,
 };
 
+console.log('APP  START');
 
 https.transfer('GET', 'sesion', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
