@@ -23,6 +23,7 @@ https.transfer('GET', 'sesion', async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   try {
     let pCard = await getData(req.query['id']);
+    console.log('APP GET ', pCard);
     if (pCard) {
       res.writeHead(200, headers)
         .end(JSON.stringify({ message: 'Дані присутні', sesionId: req.query['id'], punchCard: JSON.parse(pCard), statusStoreCards: true }));
